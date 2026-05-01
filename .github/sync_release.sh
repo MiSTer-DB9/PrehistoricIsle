@@ -12,7 +12,7 @@ CORE_NAME=(prehisle)
 MAIN_BRANCH="main"
 COMPILATION_INPUT=(prehisle.qpf)
 COMPILATION_OUTPUT=(output_files/prehisle.rbf)
-QUARTUS_IMAGE="theypsilon/quartus-lite-c5:19.1.docker0"
+QUARTUS_IMAGE="${QUARTUS_IMAGE:?QUARTUS_IMAGE env not set — populated by workflow Resolve-Quartus-image step}"
 
 # [MiSTer-DB9 BEGIN] - fork-only cores have no upstream; sync_release is a no-op
 if [[ -z "${UPSTREAM_REPO}" ]]; then
