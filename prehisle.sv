@@ -344,9 +344,31 @@ wire  [1:0] buttons;
 wire [63:0] status;
 wire [10:0] ps2_key;
 wire [15:0] joy0_USB, joy1_USB;
-// [MiSTer-DB9-Pro BEGIN] - DB controllers muted while OSD is open
-wire [15:0] joy0 = joydb_1ena ? (OSD_STATUS ? 16'b0 : joydb_1) : joy0_USB;
-wire [15:0] joy1 = joydb_2ena ? (OSD_STATUS ? 16'b0 : joydb_2) : joydb_1ena ? joy0_USB : joy1_USB;
+// [MiSTer-DB9-Pro BEGIN] - DB controllers muted while OSD is open + arcade-aligned remap
+// joydb_1[11:0] is unified across DB9MD/DB15/Saturn:
+//   [11]=Mode/Select(Saturn R), [10]=Start, [9]=Z/F, [8]=Y/E, [7]=X/D, [6:4]=C/B/A, [3:0]=UDLR
+// Mapping (3-button MD compatible — Start, A, B, C are the only real buttons there):
+//   start1 (joy0[7]) <- joydb[10] = Start
+//   start2 (joy0[8]) <- joydb[8]  = Y/E (6-button only — 3-btn user has no P2-start hardware)
+//   coin_a (joy0[9]) <- joydb[11] | (joydb[10] & joydb[5]) = Select OR Start+B chord (3-btn fallback)
+//   coin_b (joy0[10]) <- 0 (keyboard 6 only — secondary coin slot)
+//   pause  (joy0[11]) <- joydb[9] = Z (extra button; pause is not a real arcade button)
+wire [15:0] joydb_1_remap = {joydb_1[15:12],
+                              joydb_1[9],
+                              1'b0,
+                              joydb_1[11] | (joydb_1[10] & joydb_1[5]),
+                              joydb_1[8],
+                              joydb_1[10],
+                              joydb_1[6:0]};
+wire [15:0] joydb_2_remap = {joydb_2[15:12],
+                              joydb_2[9],
+                              1'b0,
+                              joydb_2[11] | (joydb_2[10] & joydb_2[5]),
+                              joydb_2[8],
+                              joydb_2[10],
+                              joydb_2[6:0]};
+wire [15:0] joy0 = joydb_1ena ? (OSD_STATUS ? 16'b0 : joydb_1_remap) : joy0_USB;
+wire [15:0] joy1 = joydb_2ena ? (OSD_STATUS ? 16'b0 : joydb_2_remap) : joydb_1ena ? joy0_USB : joy1_USB;
 // [MiSTer-DB9-Pro END]
 
 hps_io #(.CONF_STR(CONF_STR)) hps_io
