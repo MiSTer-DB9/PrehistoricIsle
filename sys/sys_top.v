@@ -138,6 +138,9 @@ wire SD_CS, SD_CLK, SD_MOSI;
 `endif
 wire SD_MISO = mcp_sdcd ? sd_miso : SD_SPI_MISO;
 
+// [MiSTer-DB9 BEGIN] - DB9/SNAC8 support: SD_SPI_CS pin reused for USER_IO[7]; stub net keeps `default_nettype none` happy
+wire SD_SPI_CS;
+// [MiSTer-DB9 END]
 `ifndef MISTER_DUAL_SDRAM
 	assign SDIO_DAT[2:1]= 2'bZZ;
 	assign SDIO_DAT[3]  = SW[3] ? 1'bZ  : SD_CS;
