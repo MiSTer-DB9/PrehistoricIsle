@@ -192,9 +192,11 @@ assign USER_PP = USER_PP_DRIVE;
 assign ADC_BUS  = 'Z;
 
 // [MiSTer-DB9 BEGIN] - DB9/SNAC8 support: joydb wrapper
+// Low free status bits used here so this fork's hps_io.sv stays bit-identical
+// to upstream (avoids future merge conflicts on sys/hps_io.sv).
 wire         CLK_JOY = CLK_50M;                 // Assign clock between 40-50Mhz
-wire   [1:0] joy_type        = status[127:126]; // 0=Off, 1=Saturn, 2=DB9MD, 3=DB15
-wire         joy_2p          = status[125];
+wire   [1:0] joy_type        = status[49:48];   // 0=Off, 1=Saturn, 2=DB9MD, 3=DB15
+wire         joy_2p          = status[47];
 wire         joy_db9md_en    = (joy_type == 2'd2);
 wire         joy_db15_en     = (joy_type == 2'd3);
 wire         joy_any_en      = |joy_type;
@@ -296,9 +298,9 @@ localparam CONF_STR = {
     "P1OM,Video Signal,RGBS/YPbPr,Y/C;",
     "P1OJ,Refresh Rate,Native,NTSC;",
     "P1-;",
-    // [MiSTer-DB9-Pro BEGIN] - Saturn-first joy_type (canonical bit notation)
-    "O[127:126],UserIO Joystick,Off,Saturn,DB9MD,DB15;",
-    "O[125],UserIO Players, 1 Player,2 Players;",
+    // [MiSTer-DB9-Pro BEGIN] - Saturn-first joy_type at low free bits 49:47
+    "O[49:48],UserIO Joystick,Off,Saturn,DB9MD,DB15;",
+    "O[47],UserIO Players, 1 Player,2 Players;",
     // [MiSTer-DB9-Pro END]
     "-;",
     "P1OOR,H-sync Pos Adj,0,1,2,3,4,5,6,7,-8,-7,-6,-5,-4,-3,-2,-1;",
@@ -339,9 +341,7 @@ wire hps_forced_scandoubler;
 wire forced_scandoubler = hps_forced_scandoubler | status[10];
 
 wire  [1:0] buttons;
-// [MiSTer-DB9 BEGIN] - widened to 128 bits for joy_type at [127:126] and joy_2p at [125]
-wire [127:0] status;
-// [MiSTer-DB9 END]
+wire [63:0] status;
 wire [10:0] ps2_key;
 wire [15:0] joy0_USB, joy1_USB;
 // [MiSTer-DB9-Pro BEGIN] - DB controllers muted while OSD is open
