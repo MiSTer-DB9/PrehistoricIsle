@@ -169,7 +169,10 @@ module hps_io #(parameter CONF_STR, CONF_STR_BRAM=1, PS2DIV=0, WIDE=0, VDNUM=1, 
 	output reg [31:0] uart_speed,
 
 	// for core-specific extensions
-	inout      [35:0] EXT_BUS
+	inout      [35:0] EXT_BUS,
+	// [MiSTer-DB9-Pro BEGIN] - key gate v1.5 saturn_unlocked output
+	output            saturn_unlocked
+	// [MiSTer-DB9-Pro END]
 );
 
 assign EXT_BUS[31:16] = HPS_BUS[31:16];
