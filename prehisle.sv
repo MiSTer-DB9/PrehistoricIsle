@@ -192,6 +192,7 @@ assign USER_PP = USER_PP_DRIVE;
 assign ADC_BUS  = 'Z;
 
 // [MiSTer-DB9 BEGIN] - DB9/SNAC8 support: joydb wrapper
+// [MiSTer-DB9 RESERVED status bits: 49:48 47]
 // Low free status bits used here so this fork's hps_io.sv stays bit-identical
 // to upstream (avoids future merge conflicts on sys/hps_io.sv).
 wire         CLK_JOY = CLK_50M;                 // Assign clock between 40-50Mhz
