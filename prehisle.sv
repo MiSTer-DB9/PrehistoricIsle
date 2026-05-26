@@ -215,9 +215,23 @@ wire  [15:0] joydb_1, joydb_2;
 wire         joydb_1ena, joydb_2ena;
 wire  [15:0] joy_raw_payload;
 
+// [MiSTer-DB9 BEGIN] - DB9/SNAC8 support: probe-gating wires
+// SNAC cores: replace 1'b0 with the core's SNAC enable expression so SNAC
+// preempts the joydb wrapper on shared USER_IO pins. Default 1'b0 is no-op.
+wire         snac_active     = 1'b0;
+// MT32-pi probe-suppression gate. Auto-detected from MT32 signals declared
+// elsewhere in this file (mt32_disable / mt32_use / mt32_on_primary). Hand-edit
+// if the heuristic missed your core's gate expression. Suppresses the OSD-open
+// autodetect probe so it doesn't read the RPi's I2C master traffic as a ghost
+// Saturn signature. See the fork hazard notes.
+wire         mt32_primary_active = 1'b0;
+// [MiSTer-DB9 END]
 joydb joydb (
   .clk             ( CLK_JOY         ),
   .USER_IN         ( USER_IN         ),
+  .OSD_STATUS          ( OSD_STATUS          ),
+  .snac_active         ( snac_active         ),
+  .mt32_primary_active ( mt32_primary_active ),
   .joy_type        ( joy_type        ),
   .joy_2p          ( joy_2p          ),
   .saturn_unlocked ( saturn_unlocked ),
@@ -349,11 +363,11 @@ wire [15:0] joy0_USB, joy1_USB;
 // joydb_1[11:0] is unified across DB9MD/DB15/Saturn:
 //   [11]=Mode/Select(Saturn R), [10]=Start, [9]=Z/F, [8]=Y/E, [7]=X/D, [6:4]=C/B/A, [3:0]=UDLR
 // Mapping (3-button MD compatible — Start, A, B, C are the only real buttons there):
-//   start1 (joy0[7]) <- joydb[10] = Start
-//   start2 (joy0[8]) <- joydb[8]  = Y/E (6-button only — 3-btn user has no P2-start hardware)
-//   coin_a (joy0[9]) <- joydb[11] = Mode/Select (3-btn pad Start+B chord is synthesized by joydb9md.v)
+//   start1 (joy0[7]) <- joydb_1[10] = Start
+//   start2 (joy0[8]) <- joydb_1[8]  = Y/E (6-button only — 3-btn user has no P2-start hardware)
+//   coin_a (joy0[9]) <- joydb_1[11] = Mode/Select (3-btn pad Start+B chord is synthesized by joydb9md.v)
 //   coin_b (joy0[10]) <- 0 (keyboard 6 only — secondary coin slot)
-//   pause  (joy0[11]) <- joydb[9] = Z (extra button; pause is not a real arcade button)
+//   pause  (joy0[11]) <- joydb_1[9] = Z (extra button; pause is not a real arcade button)
 wire [15:0] joydb_1_remap = {joydb_1[15:12],
                               joydb_1[9],
                               1'b0,

@@ -1531,14 +1531,14 @@ assign USER_IO[5] = user_pp[5] ? user_out[5] : !(SW[1] ? HDMI_LRCLK : user_out[5
 assign USER_IO[6] = user_pp[6] ? user_out[6] : !user_out[6]  ? 1'b0 : 1'bZ;
 assign USER_IO[7] = user_pp[7] ? user_out[7] : !user_out[7]  ? 1'b0 : 1'bZ;
 
-assign user_in[0] =         USER_IO[0];
-assign user_in[1] =         USER_IO[1];
+assign user_in[0] = USER_IO[0];
+assign user_in[1] = USER_IO[1];
 assign user_in[2] = SW[1] | USER_IO[2];
-assign user_in[3] =         USER_IO[3];
+assign user_in[3] = USER_IO[3];
 assign user_in[4] = SW[1] | USER_IO[4];
 assign user_in[5] = SW[1] | USER_IO[5];
-assign user_in[6] =         USER_IO[6];
-assign user_in[7] =         USER_IO[7];
+assign user_in[6] = USER_IO[6];
+assign user_in[7] = USER_IO[7];
 // [MiSTer-DB9 END]
 
 
